@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StyleAI - Your Personal Fashion Stylist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        main {
+            margin-top: 100px;
+            padding: 2rem 0;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            color: white;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+        }
+
+        .analysis-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 3rem;
+            margin: 3rem 0;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .analysis-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .step-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 2rem;
+            border-radius: 15px;
+            color: white;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .step-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .camera-section {
+            background: #f8f9ff;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .camera-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        #video {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        #canvas {
+            display: none;
+        }
+
+        .camera-placeholder {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(45deg, #eee, #ddd);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #666;
+            border: 2px dashed #ccc;
+        }
+
+        .controls {
+            margin-top: 2rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        }
+
+        .results-section {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .result-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .color-swatch {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .outfit-suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .outfit-item {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .features {
+            padding: 4rem 0;
+            background: rgba(255, 255, 255, 0.9);
+            margin: 3rem 0;
+            border-radius: 20px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .analysis-steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo">StyleAI</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#analyze">Analyze</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="hero" id="home">
+            <h1>Your AI Personal Stylist</h1>
+            <p>Discover your perfect colors and outfits with advanced AI skin tone and body shape analysis</p>
+        </section>
+
+        <section class="analysis-container" id="analyze">
+            <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: #333;">Get Your Personal Style Analysis</h2>
+            
+            <div class="analysis-steps">
+                <div class="step-card">
+                    <div class="step-number">01</div>
+                    <h3>Skin Tone Analysis</h3>
+                    <p>Our AI analyzes your skin undertones to recommend the most flattering colors for you</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">02</div>
+                    <h3>Body Shape Detection</h3>
+                    <p>Advanced computer vision identifies your body shape for personalized outfit recommendations</p>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">03</div>
+                    <h3>Style Recommendations</h3>
+                    <p>Get curated outfit suggestions and color palettes tailored specifically for you</p>
+                </div>
+            </div>
+
+            <div class="camera-section">
+                <h3 style="margin-bottom: 2rem; color: #333;">Start Your Analysis</h3>
+                <div class="camera-container">
+                    <video id="video" autoplay></video>
+                    <canvas id="canvas"></canvas>
+                    <div class="camera-placeholder" id="placeholder">
+                        <div>
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📷</div>
+                            <div>Camera will appear here</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="startCamera()">Start Camera</button>
+                    <button class="btn btn-secondary" onclick="capturePhoto()" id="captureBtn" style="display: none;">Capture Photo</button>
+                    <button class="btn btn-primary" onclick="analyzeImage()" id="analyzeBtn" style="display: none;">Analyze My Style</button>
+                </div>
+
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing your style... Please wait</p>
+                </div>
+            </div>
+
+            <div class="results-section" id="results">
+                <h3 style="text-align: center; margin-bottom: 2rem;">Your Personalized Style Results</h3>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>Your Skin Tone</h4>
+                        <p id="skinToneResult">Warm undertones detected</p>
+                        <h5>Perfect Colors for You:</h5>
+                        <div class="color-palette" id="colorPalette">
+                            <div class="color-swatch" style="background: #D2691E;"></div>
+                            <div class="color-swatch" style="background: #CD853F;"></div>
+                            <div class="color-swatch" style="background: #F4A460;"></div>
+                            <div class="color-swatch" style="background: #DEB887;"></div>
+                            <div class="color-swatch" style="background: #D2B48C;"></div>
+                        </div>
+                    </div>
+                    <div class="result-card">
+                        <h4>Your Body Shape</h4>
+                        <p id="bodyShapeResult">Hourglass shape detected</p>
+                        <h5>Recommended Outfits:</h5>
+                        <div class="outfit-suggestions">
+                            <div class="outfit-item">Wrap Dresses</div>
+                            <div class="outfit-item">High-Waisted Jeans</div>
+                            <div class="outfit-item">Fitted Blazers</div>
+                            <div class="outfit-item">A-Line Skirts</div>
+                            <div class="outfit-item">Belted Tops</div>
+                            <div class="outfit-item">V-Neck Styles</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="container">
+                <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem;">Why Choose StyleAI?</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🎨</div>
+                        <h3>AI Color Analysis</h3>
+                        <p>Advanced algorithms analyze your skin undertones to recommend the most flattering color palette for your unique complexion.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👗</div>
+                        <h3>Body Shape Recognition</h3>
+                        <p>Computer vision technology identifies your body shape and suggests outfits that enhance your natural silhouette.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">✨</div>
+                        <h3>Personalized Styling</h3>
+                        <p>Get customized fashion recommendations that combine your best colors with flattering styles for your body type.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 StyleAI - Your Personal Fashion Stylist. Powered by AI.</p>
+        </div>
+    </footer>
+
+    <script>
+        let video = document.getElementById('video');
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d');
+        let stream = null;
+
+        async function startCamera() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: 640, 
+                        height: 480,
+                        facingMode: 'user'
+                    } 
+                });
+                video.srcObject = stream;
+                video.style.display = 'block';
+                document.getElementById('placeholder').style.display = 'none';
+                document.getElementById('captureBtn').style.display = 'inline-block';
+            } catch (err) {
+                alert('Camera access denied. Please allow camera permissions and try again.');
+                console.error('Error accessing camera:', err);
+            }
+        }
+
+        function capturePhoto() {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            
+            // Stop camera stream
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            
+            video.style.display = 'none';
+            document.getElementById('captureBtn').style.display = 'none';
+            document.getElementById('analyzeBtn').style.display = 'inline-block';
+        }
+
+        function analyzeImage() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('analyzeBtn').style.display = 'none';
+            
+            // Simulate AI analysis
+            setTimeout(() => {
+                document.getElementById('loading').style.display = 'none';
+                performAnalysis();
+                document.getElementById('results').style.display = 'block';
+                document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            }, 3000);
+        }
+
+        function performAnalysis() {
+            // Simulated analysis results
+            const skinTones = [
+                { type: 'Warm undertones', colors: ['#D2691E', '#CD853F', '#F4A460', '#DEB887', '#D2B48C'] },
+                { type: 'Cool undertones', colors: ['#4682B4', '#6495ED', '#87CEEB', '#B0C4DE', '#E6E6FA'] },
+                { type: 'Neutral undertones', colors: ['#708090', '#2F4F4F', '#696969', '#778899', '#DCDCDC'] }
+            ];
+
+            const bodyShapes = [
+                { shape: 'Hourglass', outfits: ['Wrap Dresses', 'High-Waisted Jeans', 'Fitted Blazers', 'A-Line Skirts', 'Belted Tops', 'V-Neck Styles'] },
+                { shape: 'Pear', outfits: ['A-Line Tops', 'Boat Necks', 'Statement Earrings', 'Straight-Leg Jeans', 'Empire Waist', 'Scoop Necks'] },
+                { shape: 'Apple', outfits: ['Empire Waist', 'V-Necks', 'Wrap Tops', 'A-Line Dresses', 'Long Cardigans', 'Flowy Blouses'] },
+                { shape: 'Rectangle', outfits: ['Peplum Tops', 'Layered Looks', 'Belted Styles', 'Ruffles', 'Cropped Jackets', 'Wide-Leg Pants'] }
+            ];
+
+            // Random selection for demo
+            const selectedSkinTone = skinTones[Math.floor(Math.random() * skinTones.length)];
+            const selectedBodyShape = bodyShapes[Math.floor(Math.random() * bodyShapes.length)];
+
+            // Update results
+            document.getElementById('skinToneResult').textContent = selectedSkinTone.type;
+            
+            const colorPalette = document.getElementById('colorPalette');
+            colorPalette.innerHTML = '';
+            selectedSkinTone.colors.forEach(color => {
+                const swatch = document.createElement('div');
+                swatch.className = 'color-swatch';
+                swatch.style.background = color;
+                colorPalette.appendChild(swatch);
+            });
+
+            document.getElementById('bodyShapeResult').textContent = selectedBodyShape.shape + ' shape detected';
+            
+            const outfitSuggestions = document.querySelector('.outfit-suggestions');
+            outfitSuggestions.innerHTML = '';
+            selectedBodyShape.outfits.forEach(outfit => {
+                const item = document.createElement('div');
+                item.className = 'outfit-item';
+                item.textContent = outfit;
+                outfitSuggestions.appendChild(item);
+            });
+        }
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Header scroll effect
+        window.addEventListener('scroll', function() {
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.style.background = 'rgba(255, 255, 255, 0.98)';
+            } else {
+                header.style.background = 'rgba(255, 255, 255, 0.95)';
+            }
+        });
+    </script>
+</body>
+</html>
